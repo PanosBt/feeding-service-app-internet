@@ -1,0 +1,15 @@
+extends layout
+
+block content
+    h1= title
+    p Welcome to #{title}
+    p This is a homepage
+    br
+    form(method='POST' action='/login')
+        div
+            label(for='username') Username
+            input(type='text' id='username' placeholder='username' name='username')
+        div
+            label(for='password') Password
+            input(type='password' id='password' placeholder='password' name='password')
+        button(class = 'submit-button') Log in
