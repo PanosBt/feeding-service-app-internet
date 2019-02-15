@@ -107,7 +107,7 @@ app.get('/userfound/:username',(req, res) => {
     apiRequest.on('error', (e) => {
         console.error(`problem with request: ${e.message}`);
     });
-    
+
     //end request
     apiRequest.end();
 });
