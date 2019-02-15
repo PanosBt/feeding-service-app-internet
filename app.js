@@ -48,14 +48,6 @@ app.post('/login', (req, res) => {
         apiRes.setEncoding('utf8');
         apiRes.on('data', (body) => {
             let responseBody = JSON.parse(body);
-            if (responseBody.authenticated && responseBody.student) {
-                console.log('User authorized');
-                //req.param(responseBody.username);
-                res.redirect('/userfound/' + responseBody.username);
-            } else {
-                console.log('User not authorized');
-                res.render('login', {title: 'StudentServiceApp', authorize: false});
-            }
         });
         //print when there is no more data in response
         apiRes.on('end', () => {
@@ -112,6 +104,49 @@ app.get('/userfound/:username',(req, res) => {
 
     //end request
     apiRequest.end();
+    res.render('unimplemented')
+});
+
+app.post('/updatestudent/:id', (req, res) => {
+
+    const studentModification = {
+        'email' : req.param('email'),
+        'phone': req.param('phone')
+    };
+
+    let options = {
+        hostname: '83.212.102.58',
+        port: 8080,
+        path: '/api/students/' + req.params.id,
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+    };
+
+    let apiRequest = http.request(options, (apiRes) =>{
+        console.log(`STATUS: ${apiRes.statusCode}`);
+        console.log(`HEADERS: ${JSON.stringify(apiRes.headers)}`);
+        apiRes.setEncoding('utf8');
+        apiRes.on('data', (body) => {
+            let responseBody = JSON.parse(body);
+            console.log(responseBody);
+        });
+        //print when there is no more data in response
+        apiRes.on('end', () => {
+            console.log('No more data in response.');
+        });
+    });
+    apiRequest.write(JSON.stringify(studentModification));
+
+    apiRequest.on('error', (e) => {
+        console.error(`problem with request: ${e.message}`);
+    });
+
+    //end request
+    apiRequest.end();
+    console.log(studentModification);
+    res.render('unimplemented');
 });
 
 // catch 404 and forward to error handler

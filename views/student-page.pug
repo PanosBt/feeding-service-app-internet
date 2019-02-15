@@ -26,16 +26,16 @@ block content
             td=responseBody.dept
     br
     p Στοιχεία Επικοινωνίας
-    form(method='POST' action='/unimplemented')
+    form(method='POST' action='/updatestudent/' + responseBody.id)
         table(border='1')
             tr
                 td Email
                 td=responseBody.email
                 td
-                    input(type='text', id='email', placeholder='Email')
+                    input(type='text', id='email', value= 'email', placeholder='Email', name='email' )
             tr
                 td Τηλέφωνό επικοινωνίας
                 td=responseBody.phone
                 td
-                    input(type='number', id='phone', placeholder='Τηλέφωνο επικοινωνίας')
+                    input(type='number', id='phone', value= 'phone', placeholder='Τηλέφωνο επικοινωνίας', name='phone')
         button(class = 'submit-button') Αποθήκευση
