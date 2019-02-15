@@ -1,0 +1,41 @@
+extends layout
+
+block content
+    h1 Καλησπέρα #{responseBody.firstName}
+    br
+    p Πληροφορίες Φοιτητή
+    br
+    table(border='1')
+        tr
+            td Όνομα
+            td=responseBody.firstName
+        tr
+            td Επίθετο
+            td=responseBody.lastName
+        tr
+            td Ημ/νία Γέννησης
+            td=responseBody.dateOfBirth
+        tr
+            td Αριθμός Ταυτότητας
+            td=responseBody.identityCardNO
+        tr
+            td Αριθμός Μητρώου
+            td=responseBody.academicID
+        tr
+            td Τμήμα
+            td=responseBody.dept
+    br
+    p Στοιχεία Επικοινωνίας
+    form(method='POST' action='/unimplemented')
+        table(border='1')
+            tr
+                td Email
+                td=responseBody.email
+                td
+                    input(type='text', id='email', placeholder='Email')
+            tr
+                td Τηλέφωνό επικοινωνίας
+                td=responseBody.phone
+                td
+                    input(type='number', id='phone', placeholder='Τηλέφωνο επικοινωνίας')
+        button(class = 'submit-button') Αποθήκευση

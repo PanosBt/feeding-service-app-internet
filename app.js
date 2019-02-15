@@ -48,7 +48,7 @@ app.post('/login', (req, res) => {
         apiRes.setEncoding('utf8');
         apiRes.on('data', (body) => {
             let responseBody = JSON.parse(body);
-            if (responseBody.authenticated === true) {
+            if (responseBody.authenticated && responseBody.student) {
                 console.log('User authorized');
                 //req.param(responseBody.username);
                 res.redirect('/userfound/' + responseBody.username);
@@ -92,10 +92,12 @@ app.get('/userfound/:username',(req, res) => {
             //checks if the students data is initialized
             if (responseBody.data_init === false) {
                 console.log('No data for this student');
-                res.render('no-data', responseBody);
+                res.render('no-data');
             }
             else {
-                res.render('unimplemented');
+                let pugVar = {'responseBody': responseBody};
+                res.render('student-page', pugVar);
+                //res.render('student-page');
             }
         });
         //print when there is no more data in response
