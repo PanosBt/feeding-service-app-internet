@@ -9,6 +9,7 @@ var myParser = require("body-parser");
 const app = express();
 const http = require('http');
 
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
@@ -31,7 +32,7 @@ app.post('/login', (req, res) => {
     });
     //object with url info and params
     let options = {
-        hostname: 'localhost',
+        hostname: '83.212.102.58',
         port: 8080,
         path: '/api/authorize?' + postData,
         method: 'GET',
@@ -40,19 +41,19 @@ app.post('/login', (req, res) => {
         }
     };
 
-    let responseBody = [];
     //create and send request to API
-    let apirequest = http.request(options, (apiRes) =>{
+    let apiRequest = http.request(options, (apiRes) =>{
         console.log(`STATUS: ${apiRes.statusCode}`);
         console.log(`HEADERS: ${JSON.stringify(apiRes.headers)}`);
         apiRes.setEncoding('utf8');
         apiRes.on('data', (body) => {
-            responseBody = JSON.parse(body);
+            let responseBody = JSON.parse(body);
             if (responseBody.authenticated === true) {
-                console.log('YAY');
+                console.log('User authorized');
+                //req.param(responseBody.username);
                 res.redirect('/userfound/' + responseBody.username);
             } else {
-                console.log('nah');
+                console.log('User not authorized');
                 res.render('login', {title: 'StudentServiceApp', authorize: false});
             }
         });
@@ -62,14 +63,53 @@ app.post('/login', (req, res) => {
         });
     });
 
-    apirequest.on('error', (e) => {
+    apiRequest.on('error', (e) => {
         console.error(`problem with request: ${e.message}`);
     });
     //end request
-    apirequest.end();
-    //console.log(responseBody.authenticated);
+    apiRequest.end();
+});
 
-    //res.send('Hey!');
+app.get('/userfound/:username',(req, res) => {
+
+    let options = {
+        hostname: '83.212.102.58',
+        port: 8080,
+        path: '/api/students?username=' + req.params.username,
+        method: 'GET',
+        headers: {
+            'Content-Length': Buffer.byteLength(req.params.username)
+        }
+    };
+
+    let apiRequest = http.request(options, (apiRes) =>{
+        console.log(`STATUS: ${apiRes.statusCode}`);
+        console.log(`HEADERS: ${JSON.stringify(apiRes.headers)}`);
+        apiRes.setEncoding('utf8');
+        apiRes.on('data', (body) => {
+            let responseBody = JSON.parse(body);
+            console.log(responseBody);
+            //checks if the students data is initialized
+            if (responseBody.data_init === false) {
+                console.log('No data for this student');
+                res.render('no-data', responseBody);
+            }
+            else {
+                res.render('unimplemented');
+            }
+        });
+        //print when there is no more data in response
+        apiRes.on('end', () => {
+            console.log('No more data in response.');
+        });
+    });
+
+    apiRequest.on('error', (e) => {
+        console.error(`problem with request: ${e.message}`);
+    });
+    
+    //end request
+    apiRequest.end();
 });
 
 // catch 404 and forward to error handler
