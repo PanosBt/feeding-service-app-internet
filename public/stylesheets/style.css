@@ -6,3 +6,83 @@ body {
 a {
   color: #00B7FF;
 }
+/*Button for submit*/
+.my-button {
+  background-color:#31bd56;
+  -moz-border-radius:28px;
+  -webkit-border-radius:28px;
+  border-radius:28px;
+  border:1px solid #18ab29;
+  display:inline-block;
+  cursor:pointer;
+  color:#ffffff;
+  font-size:17px;
+  padding: 8px 96px;
+  text-decoration:none;
+  text-shadow:0px 1px 0px #2f6627;
+}
+.my-button:hover {
+  background-color:#2da357;
+}
+.my-button:active {
+  position:relative;
+  top:1px;
+}
+
+
+.rounded-box {
+  -webkit-box-shadow: 3px 3px 12px 0px rgba(0,0,0,1);
+  -moz-box-shadow: 3px 3px 12px 0px rgba(0,0,0,1);
+  box-shadow: 3px 3px 12px 0px rgba(0,0,0,1);
+  border-radius: 15px;
+  background:  #EFEAF0;
+  padding: 2%;
+  margin: auto;
+  width:350px;
+  height:180px;
+  border: 1px solid black;
+  text-align:center;
+}
+/*so username and password labels are on top*/
+.my-display {
+  display:block;
+}
+
+.center-stuff {
+  margin:auto;
+}
+
+.error-color{
+  color:#FF0000;
+}
+
+.text-input{
+  padding-left: 15px;
+  border-radius:28px;
+  width:220px;
+  height:35px;
+  align-items: center;
+  justify-content: center;
+}
+
+body{
+  background: url("https://i.pinimg.com/originals/1d/38/88/1d38889d216b9180c6712e8553f471b3.jpg") no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+
+/*Put font-awesome icons inside the input*/
+/*.awesome-fix #awe-fix{*/
+  /*border-radius: 3px;*/
+  /*border: 1px silver solid;*/
+  /*padding-left: 10px;*/
+  /*font-weight: bolder;*/
+  /*color: #bcbcbc;*/
+  /*height: 40px;*/
+  /*width: 350px;*/
+/*}*/
+/*.awesome-fix .fas {*/
+  /*margin: auto -30px;*/
+/*}*/
