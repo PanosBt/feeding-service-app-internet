@@ -29,6 +29,10 @@ app.use(session({
     }
 ));
 
+const apiHostname = '83.212.102.58';
+const apiPort = 8080;
+const apiStaticPath = '/api';
+
 let sess;
 
 app.get('/', (req, res) => {
@@ -48,18 +52,21 @@ app.post('/login', (req, res) => {
     sess = req.session;
 
     //stringify the params
-    const postData = querystring.stringify({
+    const authData = querystring.stringify({
         username: req.body.username,
         password: req.body.password
     });
     //object with url info and params
     let options = {
-        hostname: '83.212.102.58',
-        port: 8080,
-        path: '/api/authorize?' + postData,
+        // hostname: '83.212.102.58',
+        hostname: apiHostname,
+        // port: 8080,
+        port: apiPort,
+        // path: '/api/authorize?' + authData,
+        path: apiStaticPath + '/authorize?' + authData,
         method: 'GET',
         headers: {
-            'Content-Length': Buffer.byteLength(postData)
+            'Content-Length': Buffer.byteLength(authData)
         }
     };
 
@@ -109,33 +116,61 @@ app.post('/login', (req, res) => {
     if (typeof sess.username === 'undefined')
         res.redirect('/');
 
-    let options = {
-        hostname: '83.212.102.58',
-        port: 8080,
-        path: '/api/students?username=' + sess.username,
+    let studentsAPIReqOptions = {
+        hostname: apiHostname,
+        port: apiPort,
+        path: apiStaticPath + '/students?username=' + sess.username,
         method: 'GET',
         headers: {
             'Content-Length': Buffer.byteLength(sess.username)
         }
     };
 
-    let apiRequest = http.request(options, (apiRes) =>{
-        console.log(`STATUS: ${apiRes.statusCode}`);
-        console.log(`HEADERS: ${JSON.stringify(apiRes.headers)}`);
-        apiRes.setEncoding('utf8');
-        apiRes.on('data', (body) => {
-            let responseBody = JSON.parse(body);
-            console.log(responseBody);
+    let studentsAPIReq = http.request(studentsAPIReqOptions, (studentsAPIResp) =>{
+        console.log(`STATUS: ${studentsAPIResp.statusCode}`);
+        console.log(`HEADERS: ${JSON.stringify(studentsAPIResp.headers)}`);
+        studentsAPIResp.setEncoding('utf8');
+        studentsAPIResp.on('data', (body) => {
+            let studentsAPIResponseBody = JSON.parse(body);
+            console.log(studentsAPIResponseBody);
             //checks if the students data is initialized
-            if (responseBody.data_init === false) {
+            // if (studentsAPIResponseBody.data_init === false) {
+            if (!studentsAPIResponseBody.data_init) {
                 console.log('No data for this student');
                 res.render('no-data');
             }
             else {
-                // let pugVar = {'responseBody': responseBody};
-                res.render('student-page', {
-                    'student': responseBody
+                // let pugVar = {'studentsAPIResponseBody': studentsAPIResponseBody};
+                // prepare request to get appldata
+                let applStatusAPIReqOptions = {
+                    hostname: apiHostname,
+                    port: apiPort,
+                    path: apiStaticPath + '/students/' + studentsAPIResponseBody.id + '/appl_status/' + (new Date()).getFullYear(),
+                    method: 'GET'
+                };
+
+                // get application data from API
+                let applDataAPIReq = http.request(applStatusAPIReqOptions, (applDataAPIResp) => {
+                    applDataAPIResp.setEncoding('utf8');
+                    applDataAPIResp.on('data', (body) => {
+                        let applDataAPIResponseBody = JSON.parse(body);
+                        console.log(applDataAPIResponseBody); //DEBUG
+
+                        // when both APIs have returned data
+                        // pass them to student-page
+                        res.render('student-page', {
+                            'student': studentsAPIResponseBody,
+                            'applStatus': applDataAPIResponseBody
+                        });
+
+                    });
                 });
+
+                applDataAPIReq.on('error', (e) => {
+                    console.error(`problem with request: ${e.message}`);
+                });
+
+                applDataAPIReq.end();
 
 
                 // console.log('!!!!!!\n' + JSON.stringify(obj.locals));
@@ -143,17 +178,17 @@ app.post('/login', (req, res) => {
             }
         });
         //print when there is no more data in response
-        apiRes.on('end', () => {
+        studentsAPIResp.on('end', () => {
             console.log('No more data in response.');
         });
     });
 
-    apiRequest.on('error', (e) => {
+    studentsAPIReq.on('error', (e) => {
         console.error(`problem with request: ${e.message}`);
     });
 
     //end request
-    apiRequest.end();
+    studentsAPIReq.end();
 
 });
 
@@ -169,45 +204,43 @@ app.post('/updatestudent/:id', (req, res) => {
         'phone': req.body.phone
     };
 
-    let options = {
-        hostname: '83.212.102.58',
-        port: 8080,
-        path: '/api/students/' + req.params.id,
+    let updateStudentAPIReqOptions = {
+        hostname: apiHostname,
+        port: apiPort,
+        path: apiStaticPath + '/students/' + req.params.id,
         method: 'PATCH',
         headers: {
             'Content-Type': 'application/json'
         },
     };
 
-    let apiRequest = http.request(options, (apiRes) =>{
-        console.log(`STATUS: ${apiRes.statusCode}`);
-        console.log(`HEADERS: ${JSON.stringify(apiRes.headers)}`);
-        apiRes.setEncoding('utf8');
-        apiRes.on('data', (body) => {
+    let updateStudentAPIReq = http.request(updateStudentAPIReqOptions, (updateStudentAPIResp) =>{
+        console.log(`STATUS: ${updateStudentAPIResp.statusCode}`);
+        console.log(`HEADERS: ${JSON.stringify(updateStudentAPIResp.headers)}`);
+        updateStudentAPIResp.setEncoding('utf8');
+        updateStudentAPIResp.on('data', (body) => {
             let responseBody = JSON.parse(body);
             console.log(responseBody);
-            let updated = apiRes.statusCode === 200;
+            let updated = updateStudentAPIResp.statusCode === 200;
             res.render('student-page.pug', {
                 student: responseBody,
                 dataUpdated: updated
 
             });
-
-
         });
         //print when there is no more data in response
-        apiRes.on('end', () => {
+        updateStudentAPIResp.on('end', () => {
             console.log('No more data in response.');
         });
     });
-    apiRequest.write(JSON.stringify(studentModification));
+    updateStudentAPIReq.write(JSON.stringify(studentModification));
 
-    apiRequest.on('error', (e) => {
+    updateStudentAPIReq.on('error', (e) => {
         console.error(`problem with request: ${e.message}`);
     });
 
     //end request
-    apiRequest.end();
+    updateStudentAPIReq.end();
     console.log(studentModification);
     // res.render('unimplemented');
 });
