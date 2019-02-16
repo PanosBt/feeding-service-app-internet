@@ -1,41 +1,49 @@
 extends layout
 
 block content
-    h1 Καλησπέρα #{responseBody.firstName}
+    form(method='POST' action='/logout')
+        button(type='submit') Αποσύνδεση
+
+    h1 Καλησπέρα #{student.firstName}
     br
     p Πληροφορίες Φοιτητή
     br
     table(border='1')
         tr
             td Όνομα
-            td=responseBody.firstName
+            td=student.firstName
         tr
             td Επίθετο
-            td=responseBody.lastName
+            td=student.lastName
         tr
             td Ημ/νία Γέννησης
-            td=responseBody.dateOfBirth
+            td=student.dateOfBirth
         tr
             td Αριθμός Ταυτότητας
-            td=responseBody.identityCardNO
+            td=student.identityCardNO
         tr
             td Αριθμός Μητρώου
-            td=responseBody.academicID
+            td=student.academicID
         tr
             td Τμήμα
-            td=responseBody.dept
+            td=student.dept
     br
     p Στοιχεία Επικοινωνίας
-    form(method='POST' action='/updatestudent/' + responseBody.id)
+    form(method='POST' action='/updatestudent/' + student.id)
         table(border='1')
             tr
                 td Email
-                td=responseBody.email
+                td=student.email
                 td
-                    input(type='text', id='email', value= 'email', placeholder='Email', name='email' )
+                    input(type='text', id='email', placeholder='Email', name='email' )
             tr
                 td Τηλέφωνό επικοινωνίας
-                td=responseBody.phone
+                td=student.phone
                 td
-                    input(type='number', id='phone', value= 'phone', placeholder='Τηλέφωνο επικοινωνίας', name='phone')
+                    input(type='number', id='phone', placeholder='Τηλέφωνο επικοινωνίας', name='phone')
         button(class = 'submit-button') Αποθήκευση
+        if typeof(dataUpdated) !== 'undefined'
+            if dataUpdated
+                p Τα στοιχεία επικοινωνίας ενημερώθηκαν επιτυχώς
+            else
+                p Η ανανέωση των στοιχείων σας απέτυχε

@@ -9,6 +9,8 @@ var myParser = require("body-parser");
 const app = express();
 const http = require('http');
 
+const session = require('express-session');
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -19,16 +21,36 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+//session initialization
+app.use(session({
+        secret: 'secretpotato',
+        resave: false,
+        saveUninitialized: true
+    }
+));
+
+let sess;
+
 app.get('/', (req, res) => {
+    // get current session
+    sess = req.session;
+
+    // if student is already logged in
+    // redirect them to /student
+    if (typeof sess.username !== 'undefined')
+        res.redirect('/student');
     res.render('login', {title: 'StudentServiceApp'})
 });
 
 //authentication method
 app.post('/login', (req, res) => {
+
+    sess = req.session;
+
     //stringify the params
     const postData = querystring.stringify({
-        'username': req.param('username'),
-        'password' : req.param('password')
+        username: req.body.username,
+        password: req.body.password
     });
     //object with url info and params
     let options = {
@@ -51,9 +73,14 @@ app.post('/login', (req, res) => {
             if (responseBody.authenticated && responseBody.student) {
                 console.log('User authorized');
                 //req.param(responseBody.username);
-                res.redirect('/userfound/' + responseBody.username);
+                sess.username = responseBody.username;
+                // res.redirect('/userfound/' + responseBody.username);
+                res.redirect('/student');
             } else {
                 console.log('User not authorized');
+                // this would be wrong in production, js
+                // u know reloading the whole page just for a message
+                // this is what js is for... :P
                 res.render('login', {title: 'StudentServiceApp', authorize: false});
             }
         });
@@ -70,15 +97,25 @@ app.post('/login', (req, res) => {
     apiRequest.end();
 });
 
-app.get('/userfound/:username',(req, res) => {
+    app.get('/student',(req, res) => {
+
+    sess = req.session;
+
+    console.log('Session object: ' + sess);
+    console.log('Session username ' + sess.username);
+
+    // if user hasn't log in or if session has expired
+    // redirect them to login page
+    if (typeof sess.username === 'undefined')
+        res.redirect('/');
 
     let options = {
         hostname: '83.212.102.58',
         port: 8080,
-        path: '/api/students?username=' + req.params.username,
+        path: '/api/students?username=' + sess.username,
         method: 'GET',
         headers: {
-            'Content-Length': Buffer.byteLength(req.params.username)
+            'Content-Length': Buffer.byteLength(sess.username)
         }
     };
 
@@ -95,8 +132,13 @@ app.get('/userfound/:username',(req, res) => {
                 res.render('no-data');
             }
             else {
-                let pugVar = {'responseBody': responseBody};
-                res.render('student-page', pugVar);
+                // let pugVar = {'responseBody': responseBody};
+                res.render('student-page', {
+                    'student': responseBody
+                });
+
+
+                // console.log('!!!!!!\n' + JSON.stringify(obj.locals));
                 //res.render('student-page');
             }
         });
@@ -117,9 +159,14 @@ app.get('/userfound/:username',(req, res) => {
 
 app.post('/updatestudent/:id', (req, res) => {
 
+    sess = req.session;
+
+    if (typeof sess.username === 'undefined')
+        res.redirect('/');
+
     const studentModification = {
-        'email' : req.param('email'),
-        'phone': req.param('phone')
+        'email' : req.body.email,
+        'phone': req.body.phone
     };
 
     let options = {
@@ -139,6 +186,14 @@ app.post('/updatestudent/:id', (req, res) => {
         apiRes.on('data', (body) => {
             let responseBody = JSON.parse(body);
             console.log(responseBody);
+            let updated = apiRes.statusCode === 200;
+            res.render('student-page.pug', {
+                student: responseBody,
+                dataUpdated: updated
+
+            });
+
+
         });
         //print when there is no more data in response
         apiRes.on('end', () => {
@@ -154,7 +209,17 @@ app.post('/updatestudent/:id', (req, res) => {
     //end request
     apiRequest.end();
     console.log(studentModification);
-    res.render('unimplemented');
+    // res.render('unimplemented');
+});
+
+// logout router
+app.post('/logout', (req, res) => {
+    req.session.destroy(function (err) {
+        if (err)
+            console.log(err);
+        else
+            res.redirect('/');
+    });
 });
 
 // catch 404 and forward to error handler
