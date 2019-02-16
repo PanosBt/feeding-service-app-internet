@@ -48,6 +48,14 @@ app.post('/login', (req, res) => {
         apiRes.setEncoding('utf8');
         apiRes.on('data', (body) => {
             let responseBody = JSON.parse(body);
+            if (responseBody.authenticated && responseBody.student) {
+                console.log('User authorized');
+                //req.param(responseBody.username);
+                res.redirect('/userfound/' + responseBody.username);
+            } else {
+                console.log('User not authorized');
+                res.render('login', {title: 'StudentServiceApp', authorize: false});
+            }
         });
         //print when there is no more data in response
         apiRes.on('end', () => {
@@ -104,7 +112,7 @@ app.get('/userfound/:username',(req, res) => {
 
     //end request
     apiRequest.end();
-    res.render('unimplemented')
+
 });
 
 app.post('/updatestudent/:id', (req, res) => {
