@@ -170,7 +170,7 @@ app.post('/updatestudent/:id', (req, res) => {
     };
 
     let options = {
-        hostname: '83.212.102.58',
+        hostname: '83.212.102.58g',
         port: 8080,
         path: '/api/students/' + req.params.id,
         method: 'PATCH',
