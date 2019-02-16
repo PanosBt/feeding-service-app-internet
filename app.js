@@ -57,7 +57,7 @@ app.post('/login', (req, res) => {
         password: req.body.password
     });
     //object with url info and params
-    let options = {
+    let authAPIReqOptions = {
         // hostname: '83.212.102.58',
         hostname: apiHostname,
         // port: 8080,
@@ -71,17 +71,17 @@ app.post('/login', (req, res) => {
     };
 
     //create and send request to API
-    let apiRequest = http.request(options, (apiRes) =>{
-        console.log(`STATUS: ${apiRes.statusCode}`);
-        console.log(`HEADERS: ${JSON.stringify(apiRes.headers)}`);
-        apiRes.setEncoding('utf8');
-        apiRes.on('data', (body) => {
-            let responseBody = JSON.parse(body);
-            if (responseBody.authenticated && responseBody.student) {
+    let authAPIReq = http.request(authAPIReqOptions, (authAPIResp) =>{
+        console.log(`STATUS: ${authAPIResp.statusCode}`);
+        console.log(`HEADERS: ${JSON.stringify(authAPIResp.headers)}`);
+        authAPIResp.setEncoding('utf8');
+        authAPIResp.on('data', (body) => {
+            let authAPIResponseBody = JSON.parse(body);
+            if (authAPIResponseBody.authenticated && authAPIResponseBody.student) {
                 console.log('User authorized');
-                //req.param(responseBody.username);
-                sess.username = responseBody.username;
-                // res.redirect('/userfound/' + responseBody.username);
+                //req.param(authAPIResponseBody.username);
+                sess.username = authAPIResponseBody.username;
+                // res.redirect('/userfound/' + authAPIResponseBody.username);
                 res.redirect('/student');
             } else {
                 console.log('User not authorized');
@@ -92,16 +92,16 @@ app.post('/login', (req, res) => {
             }
         });
         //print when there is no more data in response
-        apiRes.on('end', () => {
+        authAPIResp.on('end', () => {
             console.log('No more data in response.');
         });
     });
 
-    apiRequest.on('error', (e) => {
+    authAPIReq.on('error', (e) => {
         console.error(`problem with request: ${e.message}`);
     });
     //end request
-    apiRequest.end();
+    authAPIReq.end();
 });
 
     app.get('/student',(req, res) => {
