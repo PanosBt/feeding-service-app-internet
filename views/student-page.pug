@@ -60,7 +60,7 @@ block content
         //    else
         //        p Η αίτησή σας είναι σε επεξεργασία. Όταν ο έλεγχος των δικαιολογητικών ολοκληρωθεί, μπορείτε να δείτε το αποτέλεσμά της σε αυτή τη σελίδα.
         //else
-    form(method='POST' action='/createapplication/' + student.id)
+    form(method='POST' action='/createapplication/' + student.id enctype='multipart/form-data')
         table(border='1')
             tr
                 td Οικογενιακό εισόδημα
@@ -93,22 +93,22 @@ block content
             tr
                 td Εκκαθαριστικό Εφορίας
                 td
-                    input(type='file', accept='.pdf', name='doc', id='EKK', enctype='multipart/form-data')
+                    input(type='file', accept='.pdf', name='EKK', id='EKK')
             tr
                 td Πιστοποιητικό Οικογενιακής Κατάστασης
                 td
-                    input(type='file', accept='.pdf', name='doc', id='POK', enctype='multipart/form-data')
+                    input(type='file', accept='.pdf', name='POK', id='POK')
             tr
                 td Πιστοποιητικό Κατοικιας
                 td
-                    input(type='file', accept='.pdf', name='doc', id='PK', enctype='multipart/form-data')
+                    input(type='file', accept='.pdf', name='PK', id='PK')
             tr
                 td Βεβαιωση Ανεργιας - Μητέρα (Αν στη παραπάνω ερώτηση απαντήσατε οχι)
                 td
-                    input(type='file', accept='.pdf', name='doc', id='BAM', enctype='multipart/form-data')
+                    input(type='file', accept='.pdf', name='BAM', id='BAM')
             tr
                 td Βεβαιωση Ανεργιας - Πατέρα (Αν στη παραπάνω ερώτηση απαντήσατε οχι)
                 td
-                    input(type='file', accept='.pdf', name='doc', id='BAP', enctype='multipart/form-data')
+                    input(type='file', accept='.pdf', name='BAP', id='BAP')
         br
         button(class = 'submit-button' id='update_buttom') Αποθήκευση αίτησης
