@@ -48,67 +48,67 @@ block content
             else
                 p Η ανανέωση των στοιχείων σας απέτυχε
 
-        if applStatus.submited
-            p Η αίτησή σας έχει υποβληθεί.
-            if applStatus.checked
-                p Η επεξεργασία της αίτησής σας έχει ολοκληρωθεί.
-                p Η κατάταξη της αίτησής σας είναι #{applStatus.rank}
-                if applStatus.feed_qualified
-                    p Είστε δικαιούχος δωρεάν σίτισης
-                else
-                    p Δεν δικαιούστε δωρεάν σίτιση
-            else
-                p Η αίτησή σας είναι σε επεξεργασία. Όταν ο έλεγχος των δικαιολογητικών ολοκληρωθεί, μπορείτε να δείτε το αποτέλεσμά της σε αυτή τη σελίδα.
-        else
-            form(method='POST' action='/createapplication/' + student.id)
-                table(border='1')
-                    tr
-                        td Οικογενιακό εισόδημα
-                        td
-                            input(type='number', id='income', name='income' )
-                    tr
-                        td Αδέρφια
-                        td
-                            input(type='number', id='siblings', name='siblings' )
-                    tr
-                        td Πόλη καταγωγής
-                        td
-                            input(type='text', id='town', name='town' )
-                    tr
-                        td Η μητέρα εργάζεται;
-                        td
-                            select(name='mother_employed')
-                                option(value=true) Ναι
-                                option(value=false) Οχι
-                    tr
-                        td Ο πετέρας εργάζεται;
-                        td
-                            select(name='father_employed')
-                                option(value=true) Ναι
-                                option(value=false) Οχι
-                br
-                p Απαραίτητα Δικαιολογιτικά:
-                br
-                table(border='1')
-                    tr
-                        td Εκκαθαριστικό Εφορίας
-                        td
-                            input(type='file', accept='.pdf', name='EKK', id='EKK')
-                    tr
-                        td Πιστοποιητικό Οικογενιακής Κατάστασης
-                        td
-                            input(type='file', accept='.pdf', name='POK', id='POK')
-                    tr
-                        td Πιστοποιητικό Κατοικιας
-                        td
-                            input(type='file', accept='.pdf', name='PK', id='PK')
-                    tr
-                        td Βεβαιωση Ανεργιας - Μητέρα (Αν στη παραπάνω ερώτηση απαντήσατε οχι)
-                        td
-                            input(type='file', accept='.pdf', name='BAM', id='BAM')
-                    tr
-                        td Βεβαιωση Ανεργιας - Πατέρα (Αν στη παραπάνω ερώτηση απαντήσατε οχι)
-                        td
-                            input(type='file', accept='.pdf', name='BAP', id='BAP')
-                br
-                button(class = 'submit-button' id='update_button') Αποθήκευση αίτησης
+        //if applStatus.submited
+        //    p Η αίτησή σας έχει υποβληθεί.
+        //    if applStatus.checked
+        //        p Η επεξεργασία της αίτησής σας έχει ολοκληρωθεί.
+        //        p Η κατάταξη της αίτησής σας είναι #{applStatus.rank}
+        //        if applStatus.feed_qualified
+        //            p Είστε δικαιούχος δωρεάν σίτισης
+        //        else
+        //            p Δεν δικαιούστε δωρεάν σίτιση
+        //    else
+        //        p Η αίτησή σας είναι σε επεξεργασία. Όταν ο έλεγχος των δικαιολογητικών ολοκληρωθεί, μπορείτε να δείτε το αποτέλεσμά της σε αυτή τη σελίδα.
+        //else
+    form(method='POST' action='/createapplication/' + student.id)
+        table(border='1')
+            tr
+                td Οικογενιακό εισόδημα
+                td
+                    input(type='number', id='income', name='income', required )
+            tr
+                td Αδέρφια
+                td
+                    input(type='number', id='numOfSiblings', name='numOfSiblings', required )
+            tr
+                td Πόλη καταγωγής
+                td
+                    input(type='text', id='city', name='city', required )
+            tr
+                td Η μητέρα εργάζεται;
+                td
+                    select(name='mother_employed', id='mother_employed')
+                        option(value='true') Ναι
+                        option(value='false') Οχι
+            tr
+                td Ο πετέρας εργάζεται;
+                td
+                    select(name='father_employed', id='father_employed')
+                        option(value='true') Ναι
+                        option(value='false') Οχι
+        br
+        p Απαραίτητα Δικαιολογιτικά:
+        br
+        table(border='1')
+            tr
+                td Εκκαθαριστικό Εφορίας
+                td
+                    input(type='file', accept='.pdf', name='doc', id='EKK', enctype='multipart/form-data')
+            tr
+                td Πιστοποιητικό Οικογενιακής Κατάστασης
+                td
+                    input(type='file', accept='.pdf', name='doc', id='POK', enctype='multipart/form-data')
+            tr
+                td Πιστοποιητικό Κατοικιας
+                td
+                    input(type='file', accept='.pdf', name='doc', id='PK', enctype='multipart/form-data')
+            tr
+                td Βεβαιωση Ανεργιας - Μητέρα (Αν στη παραπάνω ερώτηση απαντήσατε οχι)
+                td
+                    input(type='file', accept='.pdf', name='doc', id='BAM', enctype='multipart/form-data')
+            tr
+                td Βεβαιωση Ανεργιας - Πατέρα (Αν στη παραπάνω ερώτηση απαντήσατε οχι)
+                td
+                    input(type='file', accept='.pdf', name='doc', id='BAP', enctype='multipart/form-data')
+        br
+        button(class = 'submit-button' id='update_buttom') Αποθήκευση αίτησης

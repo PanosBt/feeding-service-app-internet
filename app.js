@@ -6,7 +6,10 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 var myParser = require("body-parser");
 
+
 const app = express();
+const multer  = require('multer')
+const upload = multer({ dest: 'uploads/' })
 const http = require('http');
 
 const session = require('express-session');
@@ -104,7 +107,7 @@ app.post('/login', (req, res) => {
     authAPIReq.end();
 });
 
-    app.get('/student',(req, res) => {
+app.get('/student',(req, res) => {
 
     sess = req.session;
 
@@ -243,6 +246,65 @@ app.post('/updatestudent/:id', (req, res) => {
     updateStudentAPIReq.end();
     console.log(studentModification);
     // res.render('unimplemented');
+});
+
+app.post('/createapplication/:id', (req, res) => {
+
+    sess = req.session;
+
+    if (typeof sess.username === 'undefined')
+        res.redirect('/');
+
+    //first create application JSON
+    const application = {
+        'student_id' : req.params.id,
+        'familyIncome' : req.body.income,
+        'num_siblings' : req.body.numOfSiblings,
+        'origin_city' : req.body.city,
+        'mother_employeed' : req.body.mother_employed,
+        'father_employeed' : req.body.father_employed
+    }
+
+    console.log(application);
+    let createApplicationAPIReqOptions = {
+        hostname: apiHostname,
+        port: apiPort,
+        path: apiStaticPath + '/application',
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+    };
+
+
+    //API call to create an application
+    let createApplicationReq = http.request(createApplicationAPIReqOptions, (createApplicationResp) =>{
+        console.log(`STATUS: ${createApplicationResp.statusCode}`);
+        console.log(`HEADERS: ${JSON.stringify(createApplicationResp.headers)}`);
+        createApplicationResp.setEncoding('utf8');
+        createApplicationResp.on('data', (body) => {
+            let responseBody = JSON.parse(body);
+
+            if (createApplicationResp.statusCode===201) {
+                //Application created with success
+                //create options to call API for documents
+
+            }
+        });
+        //print when there is no more data in response
+        createApplicationResp.on('end', () => {
+            console.log('No more data in response.');
+        });
+    });
+    createApplicationReq.write(JSON.stringify(application));
+
+    createApplicationReq.on('error', (e) => {
+        console.error(`problem with request: ${e.message}`);
+    });
+
+    //end request
+    createApplicationReq.end();
+    res.render('unimplemented');
 });
 
 // logout router
