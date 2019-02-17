@@ -69,61 +69,61 @@ block content
                 else
                     p Η αίτησή σας είναι σε επεξεργασία. Όταν ο έλεγχος των δικαιολογητικών ολοκληρωθεί, μπορείτε να δείτε το αποτέλεσμά της σε αυτή τη σελίδα.
             else
-        form(method='POST' action='/createapplication/' + student.id enctype='multipart/form-data')
-            table(class="simple-table table-align")
-                tr
-                    th Στοιχεία Οικογένειας Φοιτητή
-                    th
-                tr
-                    td Οικογενειακό εισόδημα
-                    td
-                        input(type='number', id='income', name='income', required )
-                tr
-                    td Αδέρφια
-                    td
-                        input(type='number', id='numOfSiblings', name='numOfSiblings', required )
-                tr
-                    td Πόλη καταγωγής
-                    td
-                        input(type='text', id='city', name='city', required )
-                tr
-                    td Η μητέρα εργάζεται;
-                    td
-                        select(name='mother_employed', id='mother_employed')
-                            option(value='true') Ναι
-                            option(value='false') Οχι
-                tr
-                    td Ο πατέρας εργάζεται;
-                    td
-                        select(name='father_employed', id='father_employed')
-                            option(value='true') Ναι
-                            option(value='false') Οχι
-            br
-            br
-            table(class="simple-table table-align")
-                tr
-                    th Απαραίτητα Δικαιολογητικά:
-                    th
-                tr
-                    td Εκκαθαριστικό Εφορίας
-                    td
-                        input(type='file', accept='.pdf', name='EKK', id='EKK')
-                tr
-                    td Πιστοποιητικό Οικογενειακής Κατάστασης
-                    td
-                        input(type='file', accept='.pdf', name='POK', id='POK')
-                tr
-                    td Πιστοποιητικό Κατοικίας
-                    td
-                        input(type='file', accept='.pdf', name='PK', id='PK')
-                tr
-                    td Βεβαίωση Ανεργίας - Μητέρα (Αν στη παραπάνω ερώτηση απαντήσατε όχι)
-                    td
-                        input(type='file', accept='.pdf', name='BAM', id='BAM')
-                tr
-                    td Βεβαίωση Ανεργίας - Πατέρα (Αν στη παραπάνω ερώτηση απαντήσατε όχι)
-                    td
-                        input(type='file', accept='.pdf', name='BAP', id='BAP')
-            br
-            br
-            button(class = 'submit-button' id='update_buttom') Αποθήκευση αίτησης
+                form(method='POST' action='/createapplication/' + student.id enctype='multipart/form-data')
+                    table(class="simple-table table-align")
+                        tr
+                            th Στοιχεία Οικογένειας Φοιτητή
+                            th
+                        tr
+                            td Οικογενειακό εισόδημα
+                            td
+                                input(type='number', id='income', name='income', required )
+                        tr
+                            td Αδέρφια
+                            td
+                                input(type='number', id='numOfSiblings', name='numOfSiblings', required )
+                        tr
+                            td Πόλη καταγωγής
+                            td
+                                input(type='text', id='city', name='city', required )
+                        tr
+                            td Η μητέρα εργάζεται;
+                            td
+                                select(name='mother_employed', id='mother_employed')
+                                    option(value='true') Ναι
+                                    option(value='false') Οχι
+                        tr
+                            td Ο πατέρας εργάζεται;
+                            td
+                                select(name='father_employed', id='father_employed')
+                                    option(value='true') Ναι
+                                    option(value='false') Οχι
+                    br
+                    br
+                    table(class="simple-table table-align")
+                        tr
+                            th Απαραίτητα Δικαιολογητικά:
+                            th
+                        tr
+                            td Εκκαθαριστικό Εφορίας
+                            td
+                                input(type='file', accept='.pdf', name='EKK', id='EKK')
+                        tr
+                            td Πιστοποιητικό Οικογενειακής Κατάστασης
+                            td
+                                input(type='file', accept='.pdf', name='POK', id='POK')
+                        tr
+                            td Πιστοποιητικό Κατοικίας
+                            td
+                                input(type='file', accept='.pdf', name='PK', id='PK')
+                        tr
+                            td Βεβαίωση Ανεργίας - Μητέρα (Αν στη παραπάνω ερώτηση απαντήσατε όχι)
+                            td
+                                input(type='file', accept='.pdf', name='BAM', id='BAM')
+                        tr
+                            td Βεβαίωση Ανεργίας - Πατέρα (Αν στη παραπάνω ερώτηση απαντήσατε όχι)
+                            td
+                                input(type='file', accept='.pdf', name='BAP', id='BAP')
+                    br
+                    br
+                    button(class = 'submit-button' id='update_buttom') Αποθήκευση αίτησης

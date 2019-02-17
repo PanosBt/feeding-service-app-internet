@@ -6,6 +6,8 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 var myParser = require("body-parser");
 
+let theReqWeNeed = require('request');
+
 
 const app = express();
 const multer  = require('multer');
@@ -15,7 +17,6 @@ var upload = multer({ storage: storage });
 const http = require('http');
 
 const session = require('express-session');
-
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -38,6 +39,7 @@ app.use(session({
 const apiHostname = '83.212.102.58';
 const apiPort = 8080;
 const apiStaticPath = '/api';
+const apiStaticUrl = 'http://' + apiHostname + ':' + apiPort + '/api';
 
 let sess;
 
@@ -270,43 +272,8 @@ let docUpload = upload.fields([{
     name: 'BAP', maxCount: 1
 }]);
 
-function uploadDocAPI(file, applicationId) {
-
-    let docUploadAPIReqOptions = {
-        hostname: apiHostname,
-        port: apiPort,
-        path: apiStaticPath + '/application/' + applicationId + '/documents/' + file.fieldname,
-        method: 'POST',
-        headers: {
-            'Content-Type': 'multipart/form-data'
-        },
-    };
-
-    let docUploadReq = http.request(docUploadAPIReqOptions, (docUploadRes) =>{
-        console.log(`STATUS: ${docUploadRes.statusCode}`);
-        console.log(`HEADERS: ${JSON.stringify(docUploadRes.headers)}`);
-        docUploadRes.setEncoding('utf8');
-        docUploadRes.on('data', (body) => {
-            let responseBody = JSON.parse(body);
-            console.log(responseBody);
-        });
-        //print when there is no more data in response
-        docUploadRes.on('end', () => {
-            console.log('No more data in response.');
-        });
-    });
-    docUploadReq.write(file.buffer);
-
-    docUploadReq.on('error', (e) => {
-        console.error(`problem with request: ${e.message}`);
-    });
-
-    //end request
-    docUploadReq.end();
-
-}
-
-app.post('/createapplication/:id', docUpload,  (req, res) => {
+// create application router
+app.post('/createapplication/:student_id', docUpload,  (req, res) => {
     sess = req.session;
 
     if (typeof sess.username === 'undefined')
@@ -314,13 +281,13 @@ app.post('/createapplication/:id', docUpload,  (req, res) => {
 
     //first create application JSON
     const application = {
-        'student_id' : req.params.id,
+        'student_id' : req.params.student_id,
         'familyIncome' : req.body.income,
         'num_siblings' : req.body.numOfSiblings,
         'origin_city' : req.body.city,
         'mother_employeed' : req.body.mother_employed,
         'father_employeed' : req.body.father_employed
-    }
+    };
 
     console.log(application);
     let createApplicationAPIReqOptions = {
@@ -335,17 +302,45 @@ app.post('/createapplication/:id', docUpload,  (req, res) => {
 
     //API call to create an application
     let createApplicationReq = http.request(createApplicationAPIReqOptions, (createApplicationResp) =>{
-        console.log(`STATUS: ${createApplicationResp.statusCode}`);
-        console.log(`HEADERS: ${JSON.stringify(createApplicationResp.headers)}`);
+        console.log(`createApplicationReq STATUS: ${createApplicationResp.statusCode}`);
+        console.log(`createApplicationReq HEADERS: ${JSON.stringify(createApplicationResp.headers)}`);
         createApplicationResp.setEncoding('utf8');
         createApplicationResp.on('data', (body) => {
             let responseBody = JSON.parse(body);
-            console.log(responseBody.appl_id);
-            console.log(req.files['EKK'][0].fieldname);
-             if (createApplicationResp.statusCode===201) {
-                 //Application created with success
-                 uploadDocAPI(req.files['EKK'][0], responseBody.appl_id);
-             }
+
+            //Application created with success
+            if (createApplicationResp.statusCode === 201) {
+                let completedRequests = 0;
+                let baseReqUrl = apiStaticUrl + '/application/' + responseBody.appl_id + '/documents/';
+
+                console.log('beginning loop for application with id ' + responseBody.appl_id);
+
+                let fileTypes = Object.keys(req.files);
+
+                for (let key in req.files) {
+                    let file = req.files[key][0];
+
+                    let docUploadAPIReq = theReqWeNeed.post(baseReqUrl + file.fieldname, function (err, resp, body) {
+                        if (err)
+                            console.log(resp.status());
+                        else {
+                            if(++completedRequests === fileTypes.length)
+                                console.log('finished!');
+                            else
+                                console.log('Completed ' + completedRequests + ' so far');
+                            console.log(body);
+                        }
+                    });
+
+                    let form = docUploadAPIReq.form();
+                    form.append('document', file.buffer, {
+                        filename: file.fieldname,
+                        contentType: 'application/pdf'
+                    });
+                }
+            }
+            else
+                console.log('createApplicationResp.statusCode is ' + createApplicationResp.statusCode);
         });
         //print when there is no more data in response
         createApplicationResp.on('end', () => {
