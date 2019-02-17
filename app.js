@@ -262,6 +262,42 @@ let docUpload = upload.fields([{
     name: 'BAP', maxCount: 1
 }]);
 
+function uploadDocAPI(file, applicationId) {
+
+    let docUploadAPIReqOptions = {
+        hostname: apiHostname,
+        port: apiPort,
+        path: apiStaticPath + '/application/' + applicationId + '/documents/' + file.fieldname,
+        method: 'POST',
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        },
+    };
+
+    let docUploadReq = http.request(docUploadAPIReqOptions, (docUploadRes) =>{
+        console.log(`STATUS: ${docUploadRes.statusCode}`);
+        console.log(`HEADERS: ${JSON.stringify(docUploadRes.headers)}`);
+        docUploadRes.setEncoding('utf8');
+        docUploadRes.on('data', (body) => {
+            let responseBody = JSON.parse(body);
+            console.log(responseBody);
+        });
+        //print when there is no more data in response
+        docUploadRes.on('end', () => {
+            console.log('No more data in response.');
+        });
+    });
+    docUploadReq.write(file.buffer);
+
+    docUploadReq.on('error', (e) => {
+        console.error(`problem with request: ${e.message}`);
+    });
+
+    //end request
+    docUploadReq.end();
+
+}
+
 app.post('/createapplication/:id', docUpload,  (req, res) => {
     sess = req.session;
 
@@ -289,8 +325,6 @@ app.post('/createapplication/:id', docUpload,  (req, res) => {
         },
     };
 
-    //console.log(req.files['EKK'][0]);
-
     //API call to create an application
     let createApplicationReq = http.request(createApplicationAPIReqOptions, (createApplicationResp) =>{
         console.log(`STATUS: ${createApplicationResp.statusCode}`);
@@ -298,12 +332,12 @@ app.post('/createapplication/:id', docUpload,  (req, res) => {
         createApplicationResp.setEncoding('utf8');
         createApplicationResp.on('data', (body) => {
             let responseBody = JSON.parse(body);
-
-            if (createApplicationResp.statusCode===201) {
-                //Application created with success
-                //create options to call API for documents
-
-            }
+            console.log(responseBody.appl_id);
+            console.log(req.files['EKK'][0].fieldname);
+             if (createApplicationResp.statusCode===201) {
+                 //Application created with success
+                 uploadDocAPI(req.files['EKK'][0], responseBody.appl_id);
+             }
         });
         //print when there is no more data in response
         createApplicationResp.on('end', () => {
