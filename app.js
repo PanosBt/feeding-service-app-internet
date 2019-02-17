@@ -9,7 +9,9 @@ var myParser = require("body-parser");
 
 const app = express();
 const multer  = require('multer')
-const upload = multer({ dest: 'uploads/' })
+var storage = multer.memoryStorage()
+var upload = multer({ storage: storage })
+//const upload = multer({ dest: 'uploads/' })
 const http = require('http');
 
 const session = require('express-session');
@@ -31,6 +33,7 @@ app.use(session({
         saveUninitialized: true
     }
 ));
+
 
 const apiHostname = '83.212.102.58';
 const apiPort = 8080;
@@ -247,9 +250,19 @@ app.post('/updatestudent/:id', (req, res) => {
     console.log(studentModification);
     // res.render('unimplemented');
 });
+let docUpload = upload.fields([{
+    name: 'EKK', maxCount: 1
+}, {
+    name: 'POK', maxCount: 1
+}, {
+    name: 'PK', maxCount: 1
+}, {
+    name:'BAM', maxCount: 1
+}, {
+    name: 'BAP', maxCount: 1
+}]);
 
-app.post('/createapplication/:id', (req, res) => {
-
+app.post('/createapplication/:id', docUpload,  (req, res) => {
     sess = req.session;
 
     if (typeof sess.username === 'undefined')
@@ -276,6 +289,7 @@ app.post('/createapplication/:id', (req, res) => {
         },
     };
 
+    //console.log(req.files['EKK'][0]);
 
     //API call to create an application
     let createApplicationReq = http.request(createApplicationAPIReqOptions, (createApplicationResp) =>{
