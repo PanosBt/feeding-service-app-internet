@@ -1,5 +1,9 @@
 extends layout
 
+block student_scripts
+    script(src='https://code.jquery.com/jquery-3.3.1.min.js')
+    script(src='js/student.js')
+
 block content
     form(method='POST' action='/logout')
         button(type='submit') Αποσύνδεση
@@ -28,38 +32,34 @@ block content
             td Τμήμα
             td=student.dept
     br
-    p Στοιχεία Επικοινωνίας
-    form(method='POST' action='/updatestudent/' + student.id)
-        table(border='1')
-            tr
-                td Email
-                td=student.email
-                td
-                    input(type='text', id='email', placeholder='Email', name='email' )
-            tr
-                td Τηλέφωνό επικοινωνίας
-                td=student.phone
-                td
-                    input(type='number', id='phone', placeholder='Τηλέφωνο επικοινωνίας', name='phone')
-        button(class = 'submit-button' id='update_button') Αποθήκευση
-        if typeof(dataUpdated) !== 'undefined'
-            if dataUpdated
-                p Τα στοιχεία επικοινωνίας ενημερώθηκαν επιτυχώς
-            else
-                p Η ανανέωση των στοιχείων σας απέτυχε
+    div(id='commData')
+        p Στοιχεία Επικοινωνίας
+        form(method='POST' action='/updatestudent/' + student.id id='updateStudentDataForm')
+            table(border='1')
+                tr
+                    td Email
+                    td=student.email
+                    td
+                        input(type='email', id='email', placeholder='Email', name='email' )
+                tr
+                    td Τηλέφωνό επικοινωνίας
+                    td=student.phone
+                    td
+                        input(type='tel', pattern='[0-9]{10}' id='phone', placeholder='Τηλέφωνο επικοινωνίας', name='phone')
+            button(type= 'submit' class = 'submit-button' id='update_button') Αποθήκευση
 
-        //if applStatus.submited
-        //    p Η αίτησή σας έχει υποβληθεί.
-        //    if applStatus.checked
-        //        p Η επεξεργασία της αίτησής σας έχει ολοκληρωθεί.
-        //        p Η κατάταξη της αίτησής σας είναι #{applStatus.rank}
-        //        if applStatus.feed_qualified
-        //            p Είστε δικαιούχος δωρεάν σίτισης
-        //        else
-        //            p Δεν δικαιούστε δωρεάν σίτιση
-        //    else
-        //        p Η αίτησή σας είναι σε επεξεργασία. Όταν ο έλεγχος των δικαιολογητικών ολοκληρωθεί, μπορείτε να δείτε το αποτέλεσμά της σε αυτή τη σελίδα.
-        //else
+        if applStatus.submited
+            p Η αίτησή σας έχει υποβληθεί.
+            if applStatus.checked
+                p Η επεξεργασία της αίτησής σας έχει ολοκληρωθεί.
+                p Η κατάταξη της αίτησής σας είναι #{applStatus.rank}
+                if applStatus.feed_qualified
+                    p Είστε δικαιούχος δωρεάν σίτισης
+                else
+                    p Δεν δικαιούστε δωρεάν σίτιση
+            else
+                p Η αίτησή σας είναι σε επεξεργασία. Όταν ο έλεγχος των δικαιολογητικών ολοκληρωθεί, μπορείτε να δείτε το αποτέλεσμά της σε αυτή τη σελίδα.
+        else
     form(method='POST' action='/createapplication/' + student.id enctype='multipart/form-data')
         table(border='1')
             tr

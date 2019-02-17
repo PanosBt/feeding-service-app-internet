@@ -8,9 +8,9 @@ var myParser = require("body-parser");
 
 
 const app = express();
-const multer  = require('multer')
-var storage = multer.memoryStorage()
-var upload = multer({ storage: storage })
+const multer  = require('multer');
+var storage = multer.memoryStorage();
+var upload = multer({ storage: storage });
 //const upload = multer({ dest: 'uploads/' })
 const http = require('http');
 
@@ -205,9 +205,10 @@ app.post('/updatestudent/:id', (req, res) => {
     if (typeof sess.username === 'undefined')
         res.redirect('/');
 
-    const studentModification = {
-        'email' : req.body.email,
-        'phone': req.body.phone
+    let studentModification = {
+        // if email or phone is an empty string, send null to the API to prevent possible overwrite
+        'email' : req.body.email?req.body.email:null,
+        'phone': req.body.phone?req.body.phone:null
     };
 
     let updateStudentAPIReqOptions = {
@@ -227,12 +228,16 @@ app.post('/updatestudent/:id', (req, res) => {
         updateStudentAPIResp.on('data', (body) => {
             let responseBody = JSON.parse(body);
             console.log(responseBody);
-            let updated = updateStudentAPIResp.statusCode === 200;
-            res.render('student-page.pug', {
-                student: responseBody,
-                dataUpdated: updated
-
-            });
+            // let updated = updateStudentAPIResp.statusCode === 200;
+            res.status(updateStudentAPIResp.statusCode);
+            let bodyStr = updateStudentAPIResp.statusCode === 200 ?
+                'Student data updated':
+                'Student data update failed';
+            res.send(bodyStr);
+            // res.render('student-page.pug', {
+            //     student: responseBody
+            //
+            // });
         });
         //print when there is no more data in response
         updateStudentAPIResp.on('end', () => {
@@ -243,6 +248,8 @@ app.post('/updatestudent/:id', (req, res) => {
 
     updateStudentAPIReq.on('error', (e) => {
         console.error(`problem with request: ${e.message}`);
+        res.status(500);
+        res.send('Internal server error');
     });
 
     //end request
@@ -250,6 +257,7 @@ app.post('/updatestudent/:id', (req, res) => {
     console.log(studentModification);
     // res.render('unimplemented');
 });
+
 let docUpload = upload.fields([{
     name: 'EKK', maxCount: 1
 }, {
