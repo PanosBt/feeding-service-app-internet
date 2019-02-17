@@ -7,108 +7,123 @@ block student_scripts
 block content
     form(method='POST' action='/logout')
         button(type='submit') Αποσύνδεση
+    div(class="custom-box")
+        h1 Καλησπέρα #{student.firstName}
+        br
+        table(class="simple-table table-align")
+            tr
+                th Πληροφορίες Φοιτητή
+                th
+            tr
+                td Όνομα
+                td=student.firstName
+            tr
+                td Επίθετο
+                td=student.lastName
+            tr
+                td Ημ/νία Γέννησης
+                td=student.dateOfBirth
+            tr
+                td Αριθμός Ταυτότητας
+                td=student.identityCardNO
+            tr
+                td Αριθμός Μητρώου
+                td=student.academicID
+            tr
+                td Τμήμα
+                td=student.dept
+        br
+        br
+        div(id='commData')
+            form(method='POST' action='/updatestudent/' + student.id id='updateStudentDataForm')
+                table(class="simple-table table-align")
+                    tr
+                        th Στοιχεία Επικοινωνίας
+                        th
+                        th
+                    tr
+                        td Email
+                        td=student.email
+                        td
+                            input(type='email', id='email', placeholder='Email', name='email' )
+                    tr
+                        td Τηλέφωνό επικοινωνίας
+                        td=student.phone
+                        td
+                            input(type='tel', pattern='[0-9]{10}' id='phone', placeholder='Τηλέφωνο επικοινωνίας', name='phone')
+                    tr
+                        td
+                        td
+                        td
+                            button(class = 'submit-button' id='update_button') Αποθήκευση
 
-    h1 Καλησπέρα #{student.firstName}
-    br
-    p Πληροφορίες Φοιτητή
-    br
-    table(border='1')
-        tr
-            td Όνομα
-            td=student.firstName
-        tr
-            td Επίθετο
-            td=student.lastName
-        tr
-            td Ημ/νία Γέννησης
-            td=student.dateOfBirth
-        tr
-            td Αριθμός Ταυτότητας
-            td=student.identityCardNO
-        tr
-            td Αριθμός Μητρώου
-            td=student.academicID
-        tr
-            td Τμήμα
-            td=student.dept
-    br
-    div(id='commData')
-        p Στοιχεία Επικοινωνίας
-        form(method='POST' action='/updatestudent/' + student.id id='updateStudentDataForm')
-            table(border='1')
-                tr
-                    td Email
-                    td=student.email
-                    td
-                        input(type='email', id='email', placeholder='Email', name='email' )
-                tr
-                    td Τηλέφωνό επικοινωνίας
-                    td=student.phone
-                    td
-                        input(type='tel', pattern='[0-9]{10}' id='phone', placeholder='Τηλέφωνο επικοινωνίας', name='phone')
-            button(type= 'submit' class = 'submit-button' id='update_button') Αποθήκευση
-
-        if applStatus.submited
-            p Η αίτησή σας έχει υποβληθεί.
-            if applStatus.checked
-                p Η επεξεργασία της αίτησής σας έχει ολοκληρωθεί.
-                p Η κατάταξη της αίτησής σας είναι #{applStatus.rank}
-                if applStatus.feed_qualified
-                    p Είστε δικαιούχος δωρεάν σίτισης
+            if applStatus.submited
+                p Η αίτησή σας έχει υποβληθεί.
+                if applStatus.checked
+                    p Η επεξεργασία της αίτησής σας έχει ολοκληρωθεί.
+                    p Η κατάταξη της αίτησής σας είναι #{applStatus.rank}
+                    if applStatus.feed_qualified
+                        p Είστε δικαιούχος δωρεάν σίτισης
+                    else
+                        p Δεν δικαιούστε δωρεάν σίτιση
                 else
-                    p Δεν δικαιούστε δωρεάν σίτιση
+                    p Η αίτησή σας είναι σε επεξεργασία. Όταν ο έλεγχος των δικαιολογητικών ολοκληρωθεί, μπορείτε να δείτε το αποτέλεσμά της σε αυτή τη σελίδα.
             else
-                p Η αίτησή σας είναι σε επεξεργασία. Όταν ο έλεγχος των δικαιολογητικών ολοκληρωθεί, μπορείτε να δείτε το αποτέλεσμά της σε αυτή τη σελίδα.
-        else
-    form(method='POST' action='/createapplication/' + student.id enctype='multipart/form-data')
-        table(border='1')
-            tr
-                td Οικογενιακό εισόδημα
-                td
-                    input(type='number', id='income', name='income', required )
-            tr
-                td Αδέρφια
-                td
-                    input(type='number', id='numOfSiblings', name='numOfSiblings', required )
-            tr
-                td Πόλη καταγωγής
-                td
-                    input(type='text', id='city', name='city', required )
-            tr
-                td Η μητέρα εργάζεται;
-                td
-                    select(name='mother_employed', id='mother_employed')
-                        option(value='true') Ναι
-                        option(value='false') Οχι
-            tr
-                td Ο πετέρας εργάζεται;
-                td
-                    select(name='father_employed', id='father_employed')
-                        option(value='true') Ναι
-                        option(value='false') Οχι
-        br
-        p Απαραίτητα Δικαιολογιτικά:
-        br
-        table(border='1')
-            tr
-                td Εκκαθαριστικό Εφορίας
-                td
-                    input(type='file', accept='.pdf', name='EKK', id='EKK')
-            tr
-                td Πιστοποιητικό Οικογενιακής Κατάστασης
-                td
-                    input(type='file', accept='.pdf', name='POK', id='POK')
-            tr
-                td Πιστοποιητικό Κατοικιας
-                td
-                    input(type='file', accept='.pdf', name='PK', id='PK')
-            tr
-                td Βεβαιωση Ανεργιας - Μητέρα (Αν στη παραπάνω ερώτηση απαντήσατε οχι)
-                td
-                    input(type='file', accept='.pdf', name='BAM', id='BAM')
-            tr
-                td Βεβαιωση Ανεργιας - Πατέρα (Αν στη παραπάνω ερώτηση απαντήσατε οχι)
-                td
-                    input(type='file', accept='.pdf', name='BAP', id='BAP')
-        br
-        button(class = 'submit-button' id='update_buttom') Αποθήκευση αίτησης
+        form(method='POST' action='/createapplication/' + student.id enctype='multipart/form-data')
+            table(class="simple-table table-align")
+                tr
+                    th Στοιχεία Οικογένειας Φοιτητή
+                    th
+                tr
+                    td Οικογενειακό εισόδημα
+                    td
+                        input(type='number', id='income', name='income', required )
+                tr
+                    td Αδέρφια
+                    td
+                        input(type='number', id='numOfSiblings', name='numOfSiblings', required )
+                tr
+                    td Πόλη καταγωγής
+                    td
+                        input(type='text', id='city', name='city', required )
+                tr
+                    td Η μητέρα εργάζεται;
+                    td
+                        select(name='mother_employed', id='mother_employed')
+                            option(value='true') Ναι
+                            option(value='false') Οχι
+                tr
+                    td Ο πατέρας εργάζεται;
+                    td
+                        select(name='father_employed', id='father_employed')
+                            option(value='true') Ναι
+                            option(value='false') Οχι
+            br
+            br
+            table(class="simple-table table-align")
+                tr
+                    th Απαραίτητα Δικαιολογητικά:
+                    th
+                tr
+                    td Εκκαθαριστικό Εφορίας
+                    td
+                        input(type='file', accept='.pdf', name='EKK', id='EKK')
+                tr
+                    td Πιστοποιητικό Οικογενειακής Κατάστασης
+                    td
+                        input(type='file', accept='.pdf', name='POK', id='POK')
+                tr
+                    td Πιστοποιητικό Κατοικίας
+                    td
+                        input(type='file', accept='.pdf', name='PK', id='PK')
+                tr
+                    td Βεβαίωση Ανεργίας - Μητέρα (Αν στη παραπάνω ερώτηση απαντήσατε όχι)
+                    td
+                        input(type='file', accept='.pdf', name='BAM', id='BAM')
+                tr
+                    td Βεβαίωση Ανεργίας - Πατέρα (Αν στη παραπάνω ερώτηση απαντήσατε όχι)
+                    td
+                        input(type='file', accept='.pdf', name='BAP', id='BAP')
+            br
+            br
+            button(class = 'submit-button' id='update_buttom') Αποθήκευση αίτησης

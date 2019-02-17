@@ -5,7 +5,7 @@ block content
     //p Welcome to #{title}
     //p This is a homepage
     br
-    div(class="rounded-box")
+    div(class="login-box")
         div(class="center-stuff")
             form(method='POST' action='/login')
                 div
@@ -19,5 +19,4 @@ block content
                 button(class = 'my-button') Log in
             if authorize === false
                 p(class="error-color") Λάθος στοιχεία!
-
 
