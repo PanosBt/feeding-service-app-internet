@@ -325,7 +325,8 @@ app.post('/createapplication/:student_id', docUpload,  (req, res) => {
                             console.log(resp.status());
                         else {
                             if(++completedRequests === fileTypes.length)
-                                console.log('finished!');
+                                //Uploading finished!
+                                res.redirect('/student');
                             else
                                 console.log('Completed ' + completedRequests + ' so far');
                             console.log(body);
@@ -355,7 +356,7 @@ app.post('/createapplication/:student_id', docUpload,  (req, res) => {
 
     //end request
     createApplicationReq.end();
-    res.render('unimplemented');
+    // res.render('unimplemented');
 });
 
 // logout router

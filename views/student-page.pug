@@ -61,9 +61,9 @@ block content
                 p Η αίτησή σας έχει υποβληθεί.
                 if applStatus.checked
                     p Η επεξεργασία της αίτησής σας έχει ολοκληρωθεί.
-                    p Η κατάταξη της αίτησής σας είναι #{applStatus.rank}
                     if applStatus.feed_qualified
                         p Είστε δικαιούχος δωρεάν σίτισης
+                        p Η κατάταξη της αίτησής σας είναι #{applStatus.rank}
                     else
                         p Δεν δικαιούστε δωρεάν σίτιση
                 else
