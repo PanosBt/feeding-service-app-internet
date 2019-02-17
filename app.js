@@ -96,7 +96,7 @@ app.post('/login', (req, res) => {
                 // this would be wrong in production, js
                 // u know reloading the whole page just for a message
                 // this is what js is for... :P
-                res.render('login', {title: 'StudentServiceApp', authorize: false});
+                res.render('login', {authorize: false});
             }
         });
         //print when there is no more data in response
@@ -142,10 +142,9 @@ app.get('/student',(req, res) => {
             let studentsAPIResponseBody = JSON.parse(body);
             console.log(studentsAPIResponseBody);
             //checks if the students data is initialized
-            // if (studentsAPIResponseBody.data_init === false) {
             if (!studentsAPIResponseBody.data_init) {
                 console.log('No data for this student');
-                res.render('no-data');
+                res.render('login', {data_nit: false});
             }
             else {
                 // let pugVar = {'studentsAPIResponseBody': studentsAPIResponseBody};
