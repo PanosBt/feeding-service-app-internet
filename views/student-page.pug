@@ -60,7 +60,7 @@ block content
             else
                 p Η αίτησή σας είναι σε επεξεργασία. Όταν ο έλεγχος των δικαιολογητικών ολοκληρωθεί, μπορείτε να δείτε το αποτέλεσμά της σε αυτή τη σελίδα.
         else
-            form(method='POST' action='/createapplication' + student.id)
+            form(method='POST' action='/createapplication/' + student.id)
                 table(border='1')
                     tr
                         td Οικογενιακό εισόδημα
