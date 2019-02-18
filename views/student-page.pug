@@ -5,8 +5,13 @@ block student_scripts
     script(src='js/student.js')
 
 block content
-    form(method='POST' action='/logout')
-        button(type='submit') Αποσύνδεση
+    div.floatRight
+        form(method='POST' action='/logout')
+            button(type='submit' class="logout-button") Αποσύνδεση
+    br
+    br
+    br
+    br
     div(class="custom-box")
         h1 Καλησπέρα #{student.firstName}
         br
@@ -55,7 +60,7 @@ block content
                         td
                         td
                         td
-                            button(class = 'submit-button' id='update_button') Αποθήκευση
+                            button(class = 'submit-button smol-button' id='update_button') Αποθήκευση
 
             if applStatus.submited
                 p Η αίτησή σας έχει υποβληθεί.
@@ -126,4 +131,4 @@ block content
                                 input(type='file', accept='.pdf', name='BAP', id='BAP')
                     br
                     br
-                    button(class = 'submit-button' id='update_buttom') Αποθήκευση αίτησης
+                    button(class = 'submit-button smol-button' id='update_buttom') Αποθήκευση αίτησης

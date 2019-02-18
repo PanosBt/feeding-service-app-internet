@@ -170,5 +170,56 @@ body{
   background-color: white;
 
 }
-
 .simple-table tr:hover {background-color:#d3e4ec;}
+
+.smol-button {
+  background-color:#619dc2;
+  -moz-border-radius:28px;
+  -webkit-border-radius:28px;
+  border-radius:28px;
+  border:1px solid #237dc2;
+  display:inline-block;
+  cursor:pointer;
+  color:#ffffff;
+  font-family:Arial;
+  font-size:17px;
+  padding:8px 30px;
+  text-decoration:none;
+  text-shadow:0px 1px 0px #237dc2;
+}
+.smol-button:hover {
+  background-color:#5ea9cc;
+}
+.smol-button:active {
+  position:relative;
+  top:1px;
+}
+.logout-button {
+  background-color:#153fab;
+  -moz-border-radius:28px;
+  -webkit-border-radius:28px;
+  border-radius:28px;
+  border:1px solid #235ec4;
+  display:inline-block;
+  cursor:pointer;
+  color:#ffffff;
+  font-family:Arial;
+  font-size:17px;
+  padding:11px 30px;
+  text-decoration:none;
+  text-shadow:0px 1px 0px #4f2866;
+}
+.logout-button:hover {
+  background-color:#2f59c4;
+}
+.logout-button:active {
+  position:relative;
+  top:1px;
+}
+
+
+.floatLeft {float: left; }
+.floatRight {float: right; }
+
+
+
