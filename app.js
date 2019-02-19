@@ -4,25 +4,22 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
-var myParser = require("body-parser");
 const theReqWeNeed = require('request');
 const multer  = require('multer');
 const fs = require('fs');
 
 const app = express();
 
-const baseDir = __dirname;
+// const baseDir = __dirname;
 
 const tmpPath = 'tmp/uploads';
 
 const maxSize = 1000000;
-// const storage = multer.memoryStorage();
 const upload = multer({dest: tmpPath,
     limits: {
         fileSize: maxSize
     }
 });
-//const upload = multer({ dest: 'uploads/' })
 const http = require('http');
 
 const session = require('express-session');
@@ -53,7 +50,7 @@ const apiStaticPath = '/api';
 const apiStaticUrl = 'http://' + apiHostname + ':' + apiPort + '/api';
 
 let sess;
-
+// '/' router (login page or student page if user already logged in)
 app.get('/', (req, res) => {
     // get current session
     sess = req.session;
@@ -75,13 +72,10 @@ app.post('/login', (req, res) => {
         username: req.body.username,
         password: req.body.password
     });
-    //object with url info and params
+    //object with url call options
     let authAPIReqOptions = {
-        // hostname: '83.212.102.58',
         hostname: apiHostname,
-        // port: 8080,
         port: apiPort,
-        // path: '/api/authorize?' + authData,
         path: apiStaticPath + '/authorize?' + authData,
         method: 'GET',
         headers: {
@@ -98,9 +92,7 @@ app.post('/login', (req, res) => {
             let authAPIResponseBody = JSON.parse(body);
             if (authAPIResponseBody.authenticated && authAPIResponseBody.student) {
                 console.log('User authorized');
-                //req.param(authAPIResponseBody.username);
                 sess.username = authAPIResponseBody.username;
-                // res.redirect('/userfound/' + authAPIResponseBody.username);
                 res.redirect('/student');
             } else {
                 console.log('User not authorized');
@@ -124,10 +116,6 @@ app.post('/login', (req, res) => {
 });
 
 app.get('/student',(req, res) => {
-
-    // let fileSizeExc = req.body.fileSizeExc;
-    // if (req.bo.contains('fileSizeExc'))
-    //     fileSizeExc = req.params.fileSizeExc;
 
     sess = req.session;
 
@@ -164,8 +152,6 @@ app.get('/student',(req, res) => {
                 res.render('login', {data_nit: false});
             }
             else {
-                // let pugVar = {'studentsAPIResponseBody': studentsAPIResponseBody};
-                // prepare request to get appldata
                 let applStatusAPIReqOptions = {
                     hostname: apiHostname,
                     port: apiPort,
@@ -178,7 +164,7 @@ app.get('/student',(req, res) => {
                     applDataAPIResp.setEncoding('utf8');
                     applDataAPIResp.on('data', (body) => {
                         let applDataAPIResponseBody = JSON.parse(body);
-                        console.log(applDataAPIResponseBody); //DEBUG
+                        console.log(applDataAPIResponseBody);
 
                         // when both APIs have returned data
                         // pass them to student-page
@@ -196,10 +182,6 @@ app.get('/student',(req, res) => {
                 });
 
                 applDataAPIReq.end();
-
-
-                // console.log('!!!!!!\n' + JSON.stringify(obj.locals));
-                //res.render('student-page');
             }
         });
         //print when there is no more data in response
@@ -247,16 +229,12 @@ app.post('/updatestudent/:id', (req, res) => {
         updateStudentAPIResp.on('data', (body) => {
             let responseBody = JSON.parse(body);
             console.log(responseBody);
-            // let updated = updateStudentAPIResp.statusCode === 200;
             res.status(updateStudentAPIResp.statusCode);
             let bodyStr = updateStudentAPIResp.statusCode === 200 ?
                 'Student data updated':
                 'Student data update failed';
             res.send(bodyStr);
-            // res.render('student-page.pug', {
-            //     student: responseBody
-            //
-            // });
+
         });
         //print when there is no more data in response
         updateStudentAPIResp.on('end', () => {
@@ -274,7 +252,6 @@ app.post('/updatestudent/:id', (req, res) => {
     //end request
     updateStudentAPIReq.end();
     console.log(studentModification);
-    // res.render('unimplemented');
 });
 
 let docUpload = upload.fields([{
@@ -328,15 +305,18 @@ app.post('/createapplication/:student_id', docUpload,  (req, res) => {
             //Application created with success
             if (createApplicationResp.statusCode === 201) {
                 let completedRequests = 0;
-                let baseReqUrl = apiStaticUrl + '/application/' + responseBody.appl_id + '/documents/';
 
                 console.log('beginning loop for application with id ' + responseBody.appl_id);
 
                 let fileTypes = Object.keys(req.files);
 
+                // send (async) each document to the API
+                let baseReqUrl = apiStaticUrl + '/application/' + responseBody.appl_id + '/documents/';
+
                 for (let key in req.files) {
                     let file = req.files[key][0];
 
+                    // API call to send document
                     let docUploadAPIReq = theReqWeNeed.post(baseReqUrl + file.fieldname, function (err, resp, body) {
                         fs.unlink(file.path, function (err) {
                             if (err)
@@ -379,7 +359,6 @@ app.post('/createapplication/:student_id', docUpload,  (req, res) => {
 
     //end request
     createApplicationReq.end();
-    // res.render('unimplemented');
 });
 
 // logout router
