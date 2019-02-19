@@ -132,4 +132,6 @@ block content
                                 input(type='file', accept='.pdf', name='BAP', id='BAP')
                     br
                     br
+                    if (fileSizeExc === 'true')
+                        p(class="error-color") Μέγιστο μέγεθος αρχείου: 1MB ανά αρχείο
                     button(class = 'submit-button smol-button' id='update_buttom') Αποθήκευση αίτησης

@@ -5,18 +5,29 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 var myParser = require("body-parser");
-
-let theReqWeNeed = require('request');
-
+const theReqWeNeed = require('request');
+const multer  = require('multer');
+const fs = require('fs');
 
 const app = express();
-const multer  = require('multer');
-var storage = multer.memoryStorage();
-var upload = multer({ storage: storage });
+
+const baseDir = __dirname;
+
+const tmpPath = 'tmp/uploads';
+
+const maxSize = 1000000;
+// const storage = multer.memoryStorage();
+const upload = multer({dest: tmpPath,
+    limits: {
+        fileSize: maxSize
+    }
+});
 //const upload = multer({ dest: 'uploads/' })
 const http = require('http');
 
 const session = require('express-session');
+
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -114,10 +125,16 @@ app.post('/login', (req, res) => {
 
 app.get('/student',(req, res) => {
 
+    // let fileSizeExc = req.body.fileSizeExc;
+    // if (req.bo.contains('fileSizeExc'))
+    //     fileSizeExc = req.params.fileSizeExc;
+
     sess = req.session;
 
     console.log('Session object: ' + sess);
     console.log('Session username ' + sess.username);
+
+    console.log(req.query.fileSizeExc);
 
     // if user hasn't log in or if session has expired
     // redirect them to login page
@@ -167,7 +184,8 @@ app.get('/student',(req, res) => {
                         // pass them to student-page
                         res.render('student-page', {
                             'student': studentsAPIResponseBody,
-                            'applStatus': applDataAPIResponseBody
+                            'applStatus': applDataAPIResponseBody,
+                            'fileSizeExc': req.query.fileSizeExc
                         });
 
                     });
@@ -320,6 +338,12 @@ app.post('/createapplication/:student_id', docUpload,  (req, res) => {
                     let file = req.files[key][0];
 
                     let docUploadAPIReq = theReqWeNeed.post(baseReqUrl + file.fieldname, function (err, resp, body) {
+                        fs.unlink(file.path, function (err) {
+                            if (err)
+                                console.log(err);
+                            else
+                                console.log('file in ' + file.path + ' deleted!');
+                        });
                         if (err)
                             console.log(resp.status());
                         else {
@@ -333,7 +357,7 @@ app.post('/createapplication/:student_id', docUpload,  (req, res) => {
                     });
 
                     let form = docUploadAPIReq.form();
-                    form.append('document', file.buffer, {
+                    form.append('document', fs.createReadStream(file.path), {
                         filename: file.fieldname,
                         contentType: 'application/pdf'
                     });
@@ -374,14 +398,21 @@ app.use(function(req, res, next) {
 });
 
 // error handler
-app.use(function(err, req, res, next) {
-    // set locals, only providing error in development
-    res.locals.message = err.message;
-    res.locals.error = req.app.get('env') === 'development' ? err : {};
+app.use(function (err, req, res, next) {
 
-    // render the error page
-    res.status(err.status || 500);
-    res.render('error');
+    if (err.code === 'LIMIT_FILE_SIZE') {
+        console.log(err.message);
+        // this is a bad hack for when u don't have enough time...
+        res.redirect('/student?fileSizeExc=true');
+    } else {
+        // set locals, only providing error in development
+        res.locals.message = err.message;
+        res.locals.error = req.app.get('env') === 'development' ? err : {};
+
+        // render the error page
+        res.status(err.status || 500);
+        res.render('error');
+    }
 });
 
 module.exports = app;
