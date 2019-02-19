@@ -15,7 +15,7 @@ block content
     div(class="custom-box")
         h1 Καλησπέρα #{student.firstName}
         br
-        table(class="simple-table table-align")
+        table(class="simple-table center-stuff")
             tr
                 th Πληροφορίες Φοιτητή
                 th
@@ -41,7 +41,7 @@ block content
         br
         div(id='commData')
             form(method='POST' action='/updatestudent/' + student.id id='updateStudentDataForm')
-                table(class="simple-table table-align")
+                table(class="simple-table center-stuff")
                     tr
                         th Στοιχεία Επικοινωνίας
                         th
@@ -59,8 +59,9 @@ block content
                     tr
                         td
                         td
-                        td
                             button(class = 'submit-button smol-button' id='update_button') Αποθήκευση
+                        td
+
             br
             br
             if applStatus.submited
@@ -76,9 +77,9 @@ block content
                     p Η αίτησή σας είναι σε επεξεργασία. Όταν ο έλεγχος των δικαιολογητικών ολοκληρωθεί, μπορείτε να δείτε το αποτέλεσμά της σε αυτή τη σελίδα.
             else
                 form(method='POST' action='/createapplication/' + student.id enctype='multipart/form-data')
-                    table(class="simple-table table-align")
+                    table(class="simple-table center-stuff")
                         tr
-                            th Στοιχεία Οικογένειας Φοιτητή
+                            th Αίτηση Σίτισης
                             th
                         tr
                             td Οικογενειακό εισόδημα
@@ -104,12 +105,6 @@ block content
                                 select(name='father_employed', id='father_employed')
                                     option(value='true') Ναι
                                     option(value='false') Οχι
-                    br
-                    br
-                    table(class="simple-table table-align")
-                        tr
-                            th Απαραίτητα Δικαιολογητικά:
-                            th
                         tr
                             td Εκκαθαριστικό Εφορίας
                             td
@@ -134,4 +129,4 @@ block content
                     br
                     if (fileSizeExc === 'true')
                         p(class="error-color") Μέγιστο μέγεθος αρχείου: 1MB ανά αρχείο
-                    button(class = 'submit-button smol-button' id='update_buttom') Αποθήκευση αίτησης
+                    button(class = 'submit-button smol-button center-stuff' id='update_buttom') Αποθήκευση αίτησης
