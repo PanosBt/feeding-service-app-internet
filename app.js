@@ -62,7 +62,7 @@ app.get('/', (req, res) => {
     // redirect them to /student
     if (typeof sess.username !== 'undefined')
         res.redirect('/student');
-    res.render('login', {title: 'StudentServiceApp'})
+    res.render('login')
 });
 
 //authentication method
