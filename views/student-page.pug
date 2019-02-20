@@ -36,7 +36,17 @@ block content
                 td=student.academicID
             tr
                 td Τμήμα
-                td=student.dept
+                td
+                    if student.dept==='DIT'
+                        p Πληροφορικής και Τηλεματικής
+                    else if student.dept==='GEO'
+                        p Γεωγραφίας
+                    else if student.dept === 'DHEE'
+                        p Οικιακής Οικονομίας
+                    else if student.dept === 'DDNS'
+                        p Επιστήμης Διαιτολογίας – Διατροφής
+                    else if student.dept === 'AIRENG'
+                        p Μηχανικών Αεροσκαφών
         br
         br
         div(id='commData')
